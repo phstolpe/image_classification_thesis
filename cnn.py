@@ -130,15 +130,15 @@ model = tf.keras.models.Sequential([
     tf.keras.layers.Dropout(0.5),
     tf.keras.layers.Flatten(),
     tf.keras.layers.Dense(512, activation='relu'),
-    tf.keras.layers.Dense(2)
+    tf.keras.layers.Dense(1, activation='sigmoid')
 
 ])
 model.summary()
 
 model.compile(optimizer= 'adam',
-              loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+              loss='binary_crossentropy',
               metrics=['accuracy'])
-EPOCHS = 25
+EPOCHS = 10
 history = model.fit(
         train_data_gen,
         steps_per_epoch=int(np.ceil(total_train / float(BATCH_SIZE))),
@@ -167,3 +167,16 @@ plt.plot(epochs_range, val_loss, label='Validation Loss')
 plt.legend(loc='upper right')
 plt.title('Training and Validation Loss')
 plt.savefig('./foo.png')
+
+
+# Evaluate the model on the test data using `evaluate`
+# print("Evaluate on test data")
+# test_loss, test_acc = model.evaluate(test_date_gen)
+results = model.evaluate(test_data_gen, batch_size=BATCH_SIZE)
+print("test loss, test acc:", results)
+
+# Generate predictions (probabilities -- the output of the last layer)
+# on new data using `predict`
+# print("Generate predictions for 3 samples")
+# predictions = model.predict(x_test[:3])
+# print("predictions shape:", predictions.shape)
