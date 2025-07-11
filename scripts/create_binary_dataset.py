@@ -2,36 +2,36 @@ import shutil
 import os
 
 #first dataset
-# source_dir = '../fresh-and-stale-images/'
-# target_dir = '../processed_datasets/dataset1/' 
-#
-# rotten = target_dir+'rotten/'
-# fresh = target_dir+'fresh/'
-#
-#
-# os.makedirs(rotten ,exist_ok=True)
-# os.makedirs(fresh ,exist_ok=True)
-#
-# sum = 0
-# for folder in os.listdir(source_dir):
-#     path = os.path.join(source_dir, folder)
-#     if not os.path.isdir(path):
-#             continue
-#     sum+= len(os.listdir(path))
-#     if folder.startswith('f'):
-#         for file in os.listdir(path):
-#             src_file = os.path.join(path, file)
-#             dst = fresh
-#             shutil.copy(src_file, dst)
-#     if folder.startswith('s'):
-#         for file in os.listdir(path):
-#             src_file = os.path.join(path, file)
-#             dst = rotten
-#             shutil.copy(src_file, dst)
-#
-# rsum = len(os.listdir(rotten))
-# fsum = len(os.listdir(fresh))
-# print(f"sum: {sum} and rotten: {rsum} and fresh: {fsum} and total{fsum+rsum}")
+source_dir = '../fresh-and-stale-images/'
+target_dir = '../processed_datasets/dataset1/' 
+
+rotten = target_dir+'rotten/'
+fresh = target_dir+'fresh/'
+
+
+os.makedirs(rotten ,exist_ok=True)
+os.makedirs(fresh ,exist_ok=True)
+
+sum = 0
+for folder in os.listdir(source_dir):
+    path = os.path.join(source_dir, folder)
+    if not os.path.isdir(path):
+            continue
+    sum+= len(os.listdir(path))
+    if folder.startswith('f'):
+        for file in os.listdir(path):
+            src_file = os.path.join(path, file)
+            dst = fresh
+            shutil.copy(src_file, dst)
+    if folder.startswith('s'):
+        for file in os.listdir(path):
+            src_file = os.path.join(path, file)
+            dst = rotten
+            shutil.copy(src_file, dst)
+
+rsum = len(os.listdir(rotten))
+fsum = len(os.listdir(fresh))
+print(f"sum: {sum} and rotten: {rsum} and fresh: {fsum} and total{fsum+rsum}")
 
 #second dataset
 
