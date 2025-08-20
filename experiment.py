@@ -5,9 +5,9 @@ import PIL.Image
 import pathlib
 import numpy as np
 from tensorflow._api.v2.data import AUTOTUNE
-# from tensorflow import keras
-# from tensorflow.keras import layers
-# from tensorflow.keras import Sequential
+from tensorflow import keras
+from tensorflow.keras import layers
+from tensorflow.keras import Sequential
 
 
 
@@ -30,20 +30,39 @@ def split_dataset(dataset, test_percentage):
 
 #build model
 def build_model():
-    pass
+    model = tf.keras.Sequential([
+    tf.keras.layers.Conv2D(32, (3,3), activation = 'relu',
+    input_shape =(img_height ,img_width,3)),
+    tf.keras.layers.MaxPooling2D(2,2),
+    tf.keras.layers.Conv2D(64, (3,3), activation ='relu'),
+    tf.keras.layers.MaxPooling2D(2,2),
+    tf.keras.layers.Dropout(0.5),
+    tf.keras.layers.Flatten(),
+    tf.keras.layers.Dense(512, activation = 'relu'),
+    tf.keras.layers.Dense(1, activation = 'sigmoid')
+    ])
+    model.compile(
+        optimizer='adam',
+        loss = 'binary_crossentropy',
+        metrics = ['accuracy']
+    )
+    return model
 
 #train model
-def train_model():
-    pass
+def train_model(model, train_ds, epochs):
+    model.fit(
+        train_ds,
+        epochs=epochs
+    ) 
 
 #test model
-def test_model():
-    pass
+def test_model(model, test_ds):
+    test_acc = model.evaluate(test_ds, verbose=2)
+    print('\n Test accuracy: ', test_acc)
 
 def get_label(file_path):
     # Convert the path to a list of path components
     parts = tf.strings.split(file_path, os.path.sep)
-    print(parts)
     # The second to last is the class-directory
     one_hot = parts[-2] == class_names
     # Integer encode the label
@@ -71,6 +90,7 @@ def configure_for_performance(ds):
 
 #program
 data_dir = './processed_datasets/dataset1/'
+second_data_dir = './processed_datasets/dataset2/'
 data_dir = pathlib.Path(data_dir).with_suffix('')
 
 img_height = 180
@@ -80,13 +100,16 @@ batch_size = 32
 ds = tf.data.Dataset.list_files(str(data_dir/'*/*/'))
 class_names = np.array(sorted([item.name for item in data_dir.glob('*') if item.name != "LICENSE.txt"]))
 train_ds, test_ds = split_dataset(ds, 0.2)
-image_batch, label_batch = next(iter(train_ds))
+# image_batch, label_batch = next(iter(train_ds))
+
+model = build_model()
+epochs = 3 
+train_model(model, train_ds, epochs)
+test_model(model, test_ds)
 
 
-# len_train= train_ds.reduce(0, lambda x, _: x+1).numpy()
-# len_test= test_ds.reduce(0, lambda x, _: x+1).numpy()
-# print(len_train)
-# print(len_test)
+
+
 # plt.figure(figsize=(10, 10))
 # for i in range(9):
 #   ax = plt.subplot(3, 3, i + 1)
