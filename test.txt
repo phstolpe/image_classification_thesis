@@ -1,4 +1,0 @@
-Dataset 1 
-	 Splits 
-		 80/20:
-			 Iteration: 0, Accuracy: 0.5200953483581543
