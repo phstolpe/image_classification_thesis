@@ -1,4 +1,3 @@
-import json
 import os
 import matplotlib.pyplot as plt
 import tensorflow as tf
@@ -11,9 +10,7 @@ from tensorflow.keras import layers
 from tensorflow.keras import Sequential
 
 
-
-
-# func som tar split
+#splits a dataset based on argument test percentage
 def split_dataset(dataset, test_percentage):
     image_count = dataset.cardinality().numpy()
     test_size = int(image_count * test_percentage)
@@ -57,7 +54,6 @@ def configure_for_performance(ds):
   ds = ds.prefetch(buffer_size=AUTOTUNE)
   return ds
 
-#build model
 def build_model():
     # model = tf.keras.Sequential([
     # tf.keras.layers.Conv2D(32, (3,3), activation = 'relu',
@@ -83,10 +79,13 @@ def build_model():
     )
     return model
 
+def run(iteration: int, split: float, path_to_ds: str): 
+    path_to_ds = pathlib.Path(path_to_ds).with_suffix('')
+    global class_names  
+    class_names = np.array(sorted([item.name for item in path_to_ds.glob('*') if item.name != "LICENSE.txt"]))
+    ds = tf.data.Dataset.list_files(str(path_to_ds/'*/*/'))
 
-#program
-def run(iteration: int, split: float): 
-    train_ds, test_ds = split_dataset(first_ds, split)
+    train_ds, test_ds = split_dataset(ds, split)
     model = build_model()
     model.fit(train_ds, epochs=epochs) 
     test_loss, test_acc = model.evaluate(test_ds, verbose=2)
@@ -98,25 +97,21 @@ def run(iteration: int, split: float):
     }
     return data
 
-
-first_data_dir = './processed_datasets/dataset1/'
-first_data_dir = pathlib.Path(first_data_dir).with_suffix('')
-
-second_data_dir = './processed_datasets/dataset2/'
-second_data_dir = pathlib.Path(second_data_dir).with_suffix('')
-
+#config variables
 img_height = 180
 img_width = 180
 batch_size = 32
 epochs = 1
+class_names = None
 
 
-first_ds = tf.data.Dataset.list_files(str(first_data_dir/'*/*/'))
-class_names = np.array(sorted([item.name for item in first_data_dir.glob('*') if item.name != "LICENSE.txt"]))
-
-
-
-
+# first_data_dir = './processed_datasets/dataset1/'
+# first_data_dir = pathlib.Path(first_data_dir).with_suffix('')
+#
+# second_data_dir = './processed_datasets/dataset2/'
+# second_data_dir = pathlib.Path(second_data_dir).with_suffix('')
+# first_ds = tf.data.Dataset.list_files(str(first_data_dir/'*/*/'))
+# class_names = np.array(sorted([item.name for item in first_data_dir.glob('*') if item.name != "LICENSE.txt"]))
 
 # image_batch, label_batch = next(iter(train_ds))
 # plt.figure(figsize=(10, 10))
