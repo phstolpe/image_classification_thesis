@@ -4,24 +4,30 @@ import tensorflow as tf
 import PIL.Image
 import pathlib
 import numpy as np
+import gc
 from tensorflow._api.v2.data import AUTOTUNE
 from tensorflow import keras
 from tensorflow.keras import layers
 from tensorflow.keras import Sequential
 
 
+
 #splits a dataset based on argument test percentage
-def split_dataset(dataset, test_percentage):
+def split_dataset(dataset, test_percentage, seed):
     image_count = dataset.cardinality().numpy()
     test_size = int(image_count * test_percentage)
+    #shuffle with random seed
+    dataset = dataset.shuffle(buffer_size=image_count, seed = seed)
+
     train_ds = dataset.skip(test_size)
     test_ds = dataset.take(test_size)
 
     train_ds = train_ds.map(process_path, num_parallel_calls=AUTOTUNE)
-    test_ds = test_ds.map(process_path, num_parallel_calls=AUTOTUNE)
-
-    test_ds = configure_for_performance(test_ds)
     train_ds = configure_for_performance(train_ds)
+
+    test_ds = test_ds.map(process_path, num_parallel_calls=AUTOTUNE)
+    test_ds = configure_for_performance(test_ds)
+
 
     return train_ds, test_ds
 
@@ -49,29 +55,28 @@ def process_path(file_path):
 
 def configure_for_performance(ds):
   ds = ds.cache()
-  ds = ds.shuffle(buffer_size=1000)
   ds = ds.batch(batch_size)
   ds = ds.prefetch(buffer_size=AUTOTUNE)
   return ds
 
 def build_model():
-    # model = tf.keras.Sequential([
-    # tf.keras.layers.Conv2D(32, (3,3), activation = 'relu',
-    # input_shape =(img_height ,img_width,3)),
-    # tf.keras.layers.MaxPooling2D(2,2),
-    # tf.keras.layers.Conv2D(64, (3,3), activation ='relu'),
-    # tf.keras.layers.MaxPooling2D(2,2),
-    # tf.keras.layers.Dropout(0.5),
-    # tf.keras.layers.Flatten(),
-    # tf.keras.layers.Dense(512, activation = 'relu'),
-    # tf.keras.layers.Dense(1, activation = 'sigmoid')
-    # ])
-    # lighter model to experiment with and get everything to work with
     model = tf.keras.Sequential([
-        tf.keras.layers.Flatten(input_shape=(img_height, img_width, 3)),
-        tf.keras.layers.Dense(128, activation='relu'),
-        tf.keras.layers.Dense(1, activation = 'sigmoid')
+    tf.keras.layers.Conv2D(32, (3,3), activation = 'relu',
+    input_shape =(img_height ,img_width,3)),
+    tf.keras.layers.MaxPooling2D(2,2),
+    tf.keras.layers.Conv2D(64, (3,3), activation ='relu'),
+    tf.keras.layers.MaxPooling2D(2,2),
+    tf.keras.layers.Dropout(0.5),
+    tf.keras.layers.Flatten(),
+    tf.keras.layers.Dense(256, activation = 'relu'),
+    tf.keras.layers.Dense(1, activation = 'sigmoid')
     ])
+    # lighter model to experiment with and get everything to work with
+    # model = tf.keras.Sequential([
+    #     tf.keras.layers.Flatten(input_shape=(img_width, img_height, 3)),
+    #     tf.keras.layers.Dense(4, activation='relu'),
+    #     tf.keras.layers.Dense(1, activation = 'sigmoid')
+    # ])
     model.compile(
         optimizer='adam',
         loss = 'binary_crossentropy',
@@ -79,39 +84,35 @@ def build_model():
     )
     return model
 
-def run(iteration: int, split: float, path_to_ds: str): 
+def run(test_size: float, path_to_ds: str, seed: int): 
     path_to_ds = pathlib.Path(path_to_ds).with_suffix('')
     global class_names  
     class_names = np.array(sorted([item.name for item in path_to_ds.glob('*') if item.name != "LICENSE.txt"]))
-    ds = tf.data.Dataset.list_files(str(path_to_ds/'*/*/'))
+    print("Number of images in dataset: ", len(list(path_to_ds.glob('*/*'))))
+    ds = tf.data.Dataset.list_files(str(path_to_ds/'*/*'))
 
-    train_ds, test_ds = split_dataset(ds, split)
+    #splits and prepares images
+    train_ds, test_ds = split_dataset(ds, test_size, seed)
     model = build_model()
     model.fit(train_ds, epochs=epochs) 
     test_loss, test_acc = model.evaluate(test_ds, verbose=2)
 
     data = {
-            "dataset" : "1",
-            "iteration" : iteration,
             "accuracy" : test_acc
     }
+    #clean up and free memory
+    keras.backend.clear_session()
+    del model
+    gc.collect()
+
     return data
 
 #config variables
-img_height = 180
-img_width = 180
-batch_size = 32
-epochs = 1
+img_height = 128 
+img_width = 128 
+batch_size = 32 
+epochs = 15
 class_names = None
-
-
-# first_data_dir = './processed_datasets/dataset1/'
-# first_data_dir = pathlib.Path(first_data_dir).with_suffix('')
-#
-# second_data_dir = './processed_datasets/dataset2/'
-# second_data_dir = pathlib.Path(second_data_dir).with_suffix('')
-# first_ds = tf.data.Dataset.list_files(str(first_data_dir/'*/*/'))
-# class_names = np.array(sorted([item.name for item in first_data_dir.glob('*') if item.name != "LICENSE.txt"]))
 
 # image_batch, label_batch = next(iter(train_ds))
 # plt.figure(figsize=(10, 10))

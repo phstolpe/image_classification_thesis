@@ -1,0 +1,27 @@
+Dataset: ./processed_datasets/dataset1/
+Percentage of dataset used for testing: 0.2
+	 Iteration: 0, Seed used: 18, Accuracy: 0.906
+	 Iteration: 1, Seed used: 44, Accuracy: 0.935
+	 Iteration: 2, Seed used: 40, Accuracy: 0.643
+ Average: 0.828
+
+Percentage of dataset used for testing: 0.4
+	 Iteration: 0, Seed used: 21, Accuracy: 0.707
+	 Iteration: 1, Seed used: 52, Accuracy: 0.520
+	 Iteration: 2, Seed used: 98, Accuracy: 0.617
+ Average: 0.615
+
+Percentage of dataset used for testing: 0.6
+	 Iteration: 0, Seed used: 85, Accuracy: 0.522
+	 Iteration: 1, Seed used: 9, Accuracy: 0.742
+	 Iteration: 2, Seed used: 99, Accuracy: 0.903
+ Average: 0.722
+
+Percentage of dataset used for testing: 0.8
+	 Iteration: 0, Seed used: 80, Accuracy: 0.817
+	 Iteration: 1, Seed used: 43, Accuracy: 0.858
+	 Iteration: 2, Seed used: 49, Accuracy: 0.670
+ Average: 0.782
+
+Experiment took: 11211.800 seconds
+Local time: 2025-09-11 03:53:51

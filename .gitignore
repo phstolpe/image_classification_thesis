@@ -3,8 +3,4 @@ processed_datasets/
 FRUIT-16K/
 fresh-and-stale-images/
 dvk_env/
-dagens_plan.txt
-adder.py
-results.json
-test.txt
-
+results/
