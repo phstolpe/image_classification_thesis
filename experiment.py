@@ -1,7 +1,5 @@
 import os
-import matplotlib.pyplot as plt
 import tensorflow as tf
-import PIL.Image
 import pathlib
 import numpy as np
 import gc
@@ -71,12 +69,6 @@ def build_model():
     tf.keras.layers.Dense(256, activation = 'relu'),
     tf.keras.layers.Dense(1, activation = 'sigmoid')
     ])
-    # lighter model to experiment with and get everything to work with
-    # model = tf.keras.Sequential([
-    #     tf.keras.layers.Flatten(input_shape=(img_width, img_height, 3)),
-    #     tf.keras.layers.Dense(4, activation='relu'),
-    #     tf.keras.layers.Dense(1, activation = 'sigmoid')
-    # ])
     model.compile(
         optimizer='adam',
         loss = 'binary_crossentropy',
@@ -113,14 +105,3 @@ img_width = 128
 batch_size = 32 
 epochs = 15
 class_names = None
-
-# image_batch, label_batch = next(iter(train_ds))
-# plt.figure(figsize=(10, 10))
-# for i in range(9):
-#   ax = plt.subplot(3, 3, i + 1)
-#   plt.imshow(image_batch[i].numpy().astype("uint8"))
-#   label = label_batch[i]
-#   plt.title(class_names[label])
-#   plt.axis("off")
-# plt.show()
-

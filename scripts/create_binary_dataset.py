@@ -34,8 +34,6 @@ fsum = len(os.listdir(fresh))
 print(f"sum: {sum} and rotten: {rsum} and fresh: {fsum} and total{fsum+rsum}")
 
 #second dataset
-
-
 source_dir = '../FRUIT-16K/'
 target_dir = '../processed_datasets/dataset2/' 
 
@@ -68,4 +66,3 @@ for folder in os.listdir(source_dir):
 rsum2 = len(os.listdir(rotten2))
 fsum2 = len(os.listdir(fresh2))
 print(f"sum: {sum2} and rotten: {rsum2} and fresh: {fsum2} and total{fsum2+rsum2}")
-
